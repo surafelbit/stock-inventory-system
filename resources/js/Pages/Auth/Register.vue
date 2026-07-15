@@ -1,21 +1,22 @@
 <script setup>
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import GuestLayout from "@/Layouts/GuestLayout.vue";
+import InputError from "@/Components/InputError.vue";
+import InputLabel from "@/Components/InputLabel.vue";
+import PrimaryButton from "@/Components/PrimaryButton.vue";
+import TextInput from "@/Components/TextInput.vue";
+import { Head, Link, useForm } from "@inertiajs/vue3";
 
 const form = useForm({
-    name: '',
-    email: '',
-    password: '',
-    password_confirmation: '',
+    company_name: "",
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
 });
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),
+    form.post(route("register"), {
+        onFinish: () => form.reset("password", "password_confirmation"),
     });
 };
 </script>
@@ -26,6 +27,24 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
+                <div>
+                    <InputLabel for="company_name" value="Company Name" />
+
+                    <TextInput
+                        id="company_name"
+                        type="text"
+                        class="mt-1 block w-full"
+                        v-model="form.company_name"
+                        required
+                        autofocus
+                        autocomplete="company_name"
+                    />
+
+                    <InputError
+                        class="mt-2"
+                        :message="form.errors.company_name"
+                    />
+                </div>
                 <InputLabel for="name" value="Name" />
 
                 <TextInput

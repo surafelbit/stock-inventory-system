@@ -30,10 +30,12 @@ class HandleInertiaRequests extends Middleware
     public function share(Request $request): array
     {
         return [
-            ...parent::share($request),
-            'auth' => [
-                'user' => $request->user(),
-            ],
-        ];
+        ...parent::share($request),
+        'auth' => [
+            'user' => $request->user(),
+            // Automatically grab the logged-in user, load their company, and send it to Vue
+            'company' => $request->user() ? $request->user()->load('company')->company : null,
+        ],
+    ];
     }
 }
