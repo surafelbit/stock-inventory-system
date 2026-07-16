@@ -29,119 +29,112 @@ const submit = () => {
     <GuestLayout>
         <Head title="Log In" />
 
-        <!-- Form Heading -->
-        <div class="mb-8 text-left">
-            <h2 class="font-headline-md text-headline-md font-extrabold text-on-surface mb-2" style="font-family: 'Plus Jakarta Sans', sans-serif;">
-                Welcome Back
+        <div class="mb-stack-lg">
+            <h2 class="font-headline-md text-headline-md text-on-surface mb-2" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+                Sign in to your account
             </h2>
             <p class="font-body-md text-body-md text-on-surface-variant">
-                Sign in to manage your inventory network.
+                Manage your global inventory and logistics streams.
             </p>
         </div>
 
-        <!-- Session Status -->
-        <div v-if="status" class="mb-6 p-4 rounded-xl bg-secondary/10 text-secondary text-sm font-semibold border border-secondary/20">
+        <div v-if="status" class="mb-4 text-sm font-medium text-green-600">
             {{ status }}
         </div>
 
-        <!-- Login Form -->
-        <form @submit.prevent="submit" class="space-y-5">
+        <form @submit.prevent="submit" class="space-y-stack-md">
             <!-- Email Field -->
-            <div>
-                <label for="email" class="block text-sm font-semibold text-on-surface/90 tracking-wide mb-1.5">
+            <div class="space-y-1 group">
+                <label for="email" class="font-label-md text-label-md text-on-surface-variant group-focus-within:text-primary transition-colors duration-200">
                     Email Address
                 </label>
-                <div class="relative">
-                    <input
-                        id="email"
-                        type="email"
-                        class="block w-full px-4 py-3 rounded-xl border border-outline-variant/60 bg-surface/40 text-on-surface placeholder:text-outline/60 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 outline-none text-[15px]"
-                        v-model="form.email"
-                        required
-                        autofocus
-                        autocomplete="username"
-                        placeholder="name@company.com"
-                    />
-                </div>
-                <InputError class="mt-1.5 text-xs text-error font-medium" :message="form.errors.email" />
+                <input
+                    id="email"
+                    type="email"
+                    class="w-full h-11 px-4 border border-outline-variant rounded bg-white text-body-md focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+                    v-model="form.email"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    placeholder="john@company.com"
+                />
+                <InputError class="mt-2" :message="form.errors.email" />
             </div>
 
             <!-- Password Field -->
-            <div>
-                <label for="password" class="block text-sm font-semibold text-on-surface/90 tracking-wide mb-1.5">
+            <div class="space-y-1 group">
+                <label for="password" class="font-label-md text-label-md text-on-surface-variant group-focus-within:text-primary transition-colors duration-200">
                     Password
                 </label>
-                <div class="relative">
-                    <input
-                        id="password"
-                        type="password"
-                        class="block w-full px-4 py-3 rounded-xl border border-outline-variant/60 bg-surface/40 text-on-surface placeholder:text-outline/60 focus:bg-white focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all duration-200 outline-none text-[15px]"
-                        v-model="form.password"
-                        required
-                        autocomplete="current-password"
-                        placeholder="••••••••"
-                    />
-                </div>
-                <InputError class="mt-1.5 text-xs text-error font-medium" :message="form.errors.password" />
+                <input
+                    id="password"
+                    type="password"
+                    class="w-full h-11 px-4 border border-outline-variant rounded bg-white text-body-md focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all outline-none"
+                    v-model="form.password"
+                    required
+                    autocomplete="current-password"
+                    placeholder="••••••••"
+                />
+                <InputError class="mt-2" :message="form.errors.password" />
             </div>
 
-            <!-- Remember Me & Forgot Password Row -->
+            <!-- Remember me & Forgot Password -->
             <div class="flex items-center justify-between pt-1">
-                <label class="flex items-center cursor-pointer select-none">
+                <label class="flex items-start gap-3 cursor-pointer select-none">
                     <input
-                        id="remember"
                         type="checkbox"
                         name="remember"
                         v-model="form.remember"
-                        class="rounded border-outline-variant/60 text-primary shadow-sm focus:ring-primary/20 focus:ring-offset-0 h-4.5 w-4.5 bg-surface/40 transition-colors"
+                        class="mt-1 w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary"
                     />
-                    <span class="ms-2.5 text-sm font-medium text-on-surface-variant">Remember me</span>
+                    <span class="font-body-md text-body-md text-on-surface-variant">Remember me</span>
                 </label>
 
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="text-sm font-semibold text-primary hover:text-on-primary-fixed-variant hover:underline transition-colors"
+                    class="font-body-md text-body-md text-primary hover:underline"
                 >
-                    Forgot password?
+                    Forgot your password?
                 </Link>
             </div>
 
             <!-- Submit Button -->
-            <div class="pt-2">
-                <button
-                    type="submit"
-                    class="btn-shimmer bg-primary text-on-primary w-full py-3.5 px-6 rounded-xl font-headline-sm font-semibold shadow-lg shadow-primary/15 hover:shadow-primary/25 active:scale-[0.98] hover:-translate-y-0.5 transition-all text-center flex items-center justify-center gap-2"
-                    :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
-                    :disabled="form.processing"
-                >
-                    <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">login</span>
-                    Log In
-                </button>
-            </div>
+            <button
+                class="w-full h-12 bg-primary-container text-white font-label-md text-[14px] font-bold rounded shadow-sm hover:opacity-90 active:scale-[0.98] transition-all border-t border-white/20 flex items-center justify-center gap-2"
+                :class="{ 'opacity-50 cursor-not-allowed': form.processing }"
+                :disabled="form.processing"
+                type="submit"
+            >
+                Sign In
+            </button>
         </form>
 
-        <!-- Footer / Demo link -->
-        <div class="mt-8 pt-6 border-t border-outline-variant/30 text-center text-sm text-on-surface-variant">
-            Don't have an account?
-            <Link :href="route('register')" class="font-bold text-primary hover:underline ml-1">
-                Request Access
-            </Link>
+        <!-- Social Divider and Buttons -->
+        <div class="mt-8 text-center">
+            <div class="relative flex items-center mb-8">
+                <div class="flex-grow border-t border-outline-variant"></div>
+                <span class="flex-shrink mx-4 font-label-md text-label-md text-outline">OR CONTINUE WITH</span>
+                <div class="flex-grow border-t border-outline-variant"></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-stack-md mb-8">
+                <button type="button" class="flex items-center justify-center gap-2 h-11 border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+                    <img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsOJnu5mYFykmWlo8ncSOHRic_M-RCzneS_GjBKSp53QXK7iSw-Z8KamhnmBCa40z6kSmG9doDuroCuxT4PASHVzT3pUJHktJ8tA9xSwTHPtDPwDg6AgnPpDa3J2JX-Rxm_hwB60PHvgvLwx8I2LJMLZDuqV_KP6S4npKvWF4pAdGFL4DLu-bXjlVWF9ZtwVBuFcfZjAKlTAuUc4xr3IRlqDQgfbBQ7hLKaqf1TrNDLPtWgDl6ZgzE">
+                    <span class="font-label-md text-label-md text-on-surface">Google</span>
+                </button>
+                <button type="button" class="flex items-center justify-center gap-2 h-11 border border-outline-variant rounded hover:bg-surface-container-low transition-colors">
+                    <img alt="Microsoft" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFXpmmfMS2w3gFfRjMWsJDW4enb0afUcvz8afvSWbebQFHspXKv2wz82-cwm0Due7KJFra2ftMKeLi-iz31gLfcetxTh-aUZiI2sWGpQAjG2hTyjNtT5BUspxuI-H_uB6Dfaql9FsFIzz6DEL7RuJtm_wXYZZr1Jfg6BOaI30BlP7gaE8ty37e7ARsVOX6twLB2zLlyWEC-SccTL63ir9OJclQiPQyK15M4uPASz7O3YebHRFlfDEP">
+                    <span class="font-label-md text-label-md text-on-surface">Microsoft</span>
+                </button>
+            </div>
+
+            <p class="font-body-md text-body-md text-on-surface-variant">
+                Don't have an account? 
+                <Link :href="route('register')" class="text-primary font-bold hover:underline">
+                    Create account instead
+                </Link>
+            </p>
         </div>
     </GuestLayout>
 </template>
-
-<style scoped>
-/* Shimmer sweep on primary buttons */
-.btn-shimmer { position: relative; overflow: hidden; }
-.btn-shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0; left: -75%;
-    width: 50%; height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
-    transform: skewX(-20deg);
-    transition: left 0.6s ease;
-}
-.btn-shimmer:hover::after { left: 125%; }
-</style>
