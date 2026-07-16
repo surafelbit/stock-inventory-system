@@ -10,18 +10,27 @@ defineProps({
 });
 
 onMounted(() => {
-    const observerOptions = { threshold: 0.1 };
+    const observerOptions = { threshold: 0.15 };
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('opacity-100', 'translate-y-0');
-                entry.target.classList.remove('opacity-0', 'translate-y-8');
+                entry.target.classList.remove('opacity-0', 'translate-y-10');
+                observer.unobserve(entry.target);
             }
         });
     }, observerOptions);
 
+    // Reveal whole sections
     document.querySelectorAll('section > div').forEach(el => {
-        el.classList.add('transition-all', 'duration-1000', 'opacity-0', 'translate-y-8');
+        el.classList.add('transition-all', 'duration-1000', 'ease-out', 'opacity-0', 'translate-y-10');
+        observer.observe(el);
+    });
+
+    // Stagger individual cards inside grids
+    document.querySelectorAll('.stagger-item').forEach((el, i) => {
+        el.classList.add('transition-all', 'duration-700', 'ease-out', 'opacity-0', 'translate-y-8');
+        el.style.transitionDelay = `${i * 120}ms`;
         observer.observe(el);
     });
 });
@@ -30,64 +39,70 @@ onMounted(() => {
 <template>
     <Head title="Invenio Pro | Inventory Intelligence, Redefined" />
 
-    <div class="bg-surface-container-low text-on-surface" style="font-family: 'Inter', sans-serif; selection-background: #e2dfff;">
+    <div class="bg-surface-container-low text-on-surface overflow-x-hidden" style="font-family: 'Inter', sans-serif;">
         <!-- Google Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
 
         <!-- Top Navigation -->
-        <nav class="w-full top-0 sticky z-50 bg-surface-container/90 backdrop-blur-lg border-b border-outline-variant/30 h-20">
-            <div class="flex justify-between items-center max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-full">
-                <div class="flex items-center gap-stack-lg">
+        <nav class="w-full top-0 sticky z-50 bg-surface-container/85 backdrop-blur-lg border-b border-outline-variant/30 h-20">
+            <div class="flex justify-between items-center max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 h-full">
+                <div class="flex items-center gap-10">
                     <span class="font-headline-md text-headline-md font-bold text-on-surface">Invenio Pro</span>
-                    <div class="hidden md:flex gap-stack-lg ml-stack-lg">
-                        <a class="font-body-md text-body-md text-on-surface font-bold border-b-2 border-primary pb-1" href="#">Product</a>
-                        <a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Solutions</a>
-                        <a class="font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200" href="#">Pricing</a>
+                    <div class="hidden md:flex gap-8 ml-4">
+                        <a class="relative font-body-md text-body-md text-on-surface font-bold pb-1 nav-link nav-link-active" href="#">Product</a>
+                        <a class="relative font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 pb-1 nav-link" href="#">Solutions</a>
+                        <a class="relative font-body-md text-body-md text-on-surface-variant hover:text-on-surface transition-colors duration-200 pb-1 nav-link" href="#">Pricing</a>
                     </div>
                 </div>
-                <div class="flex items-center gap-stack-md">
+                <div class="flex items-center gap-4">
                     <Link v-if="canLogin && $page.props.auth?.user" :href="route('dashboard')" class="hidden md:block font-label-md text-label-md text-on-surface px-4 py-2 hover:bg-surface-variant rounded transition-all">Dashboard</Link>
                     <template v-else-if="canLogin">
                         <Link :href="route('login')" class="hidden md:block font-label-md text-label-md text-on-surface px-4 py-2 hover:bg-surface-variant rounded transition-all">Sign In</Link>
-                        <Link v-if="canRegister" :href="route('register')" class="bg-primary text-on-primary px-6 py-2.5 rounded font-label-md text-label-md active:scale-95 transition-transform shadow-md hover:bg-primary-container" style="box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.2);">Book a Demo</Link>
+                        <Link v-if="canRegister" :href="route('register')" class="btn-shimmer bg-primary text-on-primary px-6 py-2.5 rounded font-label-md text-label-md active:scale-95 transition-transform shadow-md hover:bg-primary-container hover:-translate-y-0.5">Book a Demo</Link>
                     </template>
-                    <button v-else class="bg-primary text-on-primary px-6 py-2.5 rounded font-label-md text-label-md active:scale-95 transition-transform shadow-md hover:bg-primary-container" style="box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.2);">Book a Demo</button>
+                    <button v-else class="btn-shimmer bg-primary text-on-primary px-6 py-2.5 rounded font-label-md text-label-md active:scale-95 transition-transform shadow-md hover:bg-primary-container hover:-translate-y-0.5">Book a Demo</button>
                 </div>
             </div>
         </nav>
 
         <!-- Hero Section -->
-        <section class="relative pt-24 pb-48 overflow-hidden bg-gradient-to-br from-surface-container via-surface-container-low to-primary/15" style="clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);">
+        <section class="relative pt-28 pb-52 overflow-hidden bg-gradient-to-br from-surface-container via-surface-container-low to-primary/15" style="clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);">
             <div class="absolute top-0 right-0 w-3/4 h-full bg-gradient-to-l from-primary/15 to-transparent -z-10 skew-x-12 transform translate-x-1/4"></div>
-            <div class="absolute -top-40 -left-40 w-[600px] h-[600px] bg-primary/15 rounded-full blur-[120px] -z-10"></div>
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="blob blob-a absolute -top-40 -left-40 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] -z-10"></div>
+            <div class="blob blob-b absolute top-40 right-0 w-[420px] h-[420px] bg-secondary/25 rounded-full blur-[110px] -z-10"></div>
+
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
                     <div class="text-left z-10">
                         <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-primary font-label-md text-label-md mb-8" style="background: rgba(211,228,254,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.08);">
-                            <span class="material-symbols-outlined" style="font-size: 16px;">verified</span>
+                            <span class="relative flex h-2 w-2">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                            </span>
                             Institutional Inventory Management
                         </div>
-                        <h1 class="font-headline-lg text-[64px] lg:text-[84px] leading-[1.05] text-on-surface font-extrabold mb-8 tracking-tight">
+                        <h1 class="font-headline-lg text-[52px] sm:text-[64px] lg:text-[84px] leading-[1.05] text-on-surface font-extrabold mb-8 tracking-tight">
                             Inventory Intelligence, <br/>
-                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Redefined.</span>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-secondary to-primary animate-gradient-text">Redefined.</span>
                         </h1>
                         <p class="font-body-lg text-[20px] leading-relaxed text-on-surface-variant max-w-xl mb-12">
                             The high-performance platform for supply chain masters. Orchestrate global stock, optimize workforce deployment, and unify multi-channel sales in one single, high-fidelity source of truth.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <Link v-if="canRegister" :href="route('register')" class="bg-primary text-on-primary px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/20">
+                            <Link v-if="canRegister" :href="route('register')" class="btn-shimmer bg-primary text-on-primary px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/30 hover:-translate-y-1">
                                 Start Free Trial <span class="material-symbols-outlined">arrow_forward</span>
                             </Link>
-                            <button v-else class="bg-primary text-on-primary px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/20">
+                            <button v-else class="btn-shimmer bg-primary text-on-primary px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-primary-container transition-all shadow-lg hover:shadow-primary/30 hover:-translate-y-1">
                                 Start Free Trial <span class="material-symbols-outlined">arrow_forward</span>
                             </button>
-                            <button class="text-on-surface px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-all" style="background: rgba(211,228,254,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.08);">
+                            <button class="text-on-surface px-8 py-4 rounded-lg font-headline-sm text-headline-sm flex items-center justify-center gap-2 hover:bg-surface-container-highest transition-all hover:-translate-y-1" style="background: rgba(211,228,254,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.08);">
+                                <span class="material-symbols-outlined">play_circle</span>
                                 Watch Product Tour
                             </button>
                         </div>
                     </div>
                     <!-- Hero Mockup -->
-                    <div class="relative z-10 h-full flex items-center lg:-mr-32 mt-12 lg:mt-0">
+                    <div class="relative z-10 h-full flex items-center lg:-mr-24 mt-12 lg:mt-0 float-slow">
                         <div class="absolute inset-0 bg-gradient-to-tr from-secondary/25 to-primary/25 rounded-[2rem] blur-3xl opacity-60 transform rotate-6 scale-105 -z-10"></div>
                         <div class="p-2 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-outline-variant/30 transform -rotate-2 hover:rotate-0 transition-transform duration-500" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
                             <img
@@ -102,37 +117,42 @@ onMounted(() => {
             </div>
         </section>
 
-        <!-- Trusted By Bar -->
-        <section class="py-16 -mt-16 bg-surface-container relative z-20 shadow-sm border-y border-outline-variant/30">
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-                <p class="font-label-md text-label-md text-center text-outline mb-8 uppercase tracking-[0.2em]">Trusted by Global Enterprises</p>
-                <div class="flex flex-wrap justify-center items-center gap-16 opacity-70 grayscale hover:grayscale-0 transition-all duration-500">
-                    <span class="font-headline-sm font-bold text-on-surface">LOGISTX</span>
-                    <span class="font-headline-sm font-bold text-on-surface">SUPPLYCORP</span>
-                    <span class="font-headline-sm font-bold text-on-surface">MERIDIAN</span>
-                    <span class="font-headline-sm font-bold text-on-surface">QUANTUM</span>
-                    <span class="font-headline-sm font-bold text-on-surface">VERTEX</span>
+        <!-- Trusted By Bar (marquee) -->
+        <section class="py-14 -mt-16 bg-surface-container relative z-20 shadow-sm border-y border-outline-variant/30 overflow-hidden">
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 mb-8">
+                <p class="font-label-md text-label-md text-center text-outline uppercase tracking-[0.2em]">Trusted by Global Enterprises</p>
+            </div>
+            <div class="marquee-mask">
+                <div class="marquee-track">
+                    <span v-for="n in 2" :key="n" class="flex items-center gap-20 pr-20">
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">LOGISTX</span>
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">SUPPLYCORP</span>
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">MERIDIAN</span>
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">QUANTUM</span>
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">VERTEX</span>
+                        <span class="font-headline-sm font-bold text-on-surface/70 hover:text-primary transition-colors">NORTHWIND</span>
+                    </span>
                 </div>
             </div>
         </section>
 
         <!-- Key Features -->
         <section class="py-32 bg-surface-container-low relative overflow-hidden">
-            <div class="absolute right-0 top-1/4 w-[500px] h-[500px] bg-secondary/15 rounded-full blur-[100px] -z-10"></div>
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div class="blob blob-c absolute right-0 top-1/4 w-[500px] h-[500px] bg-secondary/15 rounded-full blur-[100px] -z-10"></div>
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
                 <div class="mb-16">
-                    <h2 class="font-headline-lg text-[48px] text-on-surface mb-4 font-extrabold">Next-Gen Capabilities</h2>
+                    <h2 class="font-headline-lg text-[36px] sm:text-[48px] text-on-surface mb-4 font-extrabold">Next-Gen Capabilities</h2>
                     <p class="font-body-lg text-on-surface-variant max-w-2xl">Engineered for absolute control and uncompromised visibility across your entire supply chain network.</p>
                 </div>
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     <!-- Feature 1 (Hero sized) -->
-                    <div class="lg:col-span-2 p-12 rounded-3xl border border-outline-variant/40 hover:border-primary/40 transition-all group hover:shadow-[0_0_40px_rgba(79,70,229,0.08)] relative overflow-hidden flex flex-col justify-end min-h-[400px]" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
+                    <div class="stagger-item card-hover lg:col-span-2 p-12 rounded-3xl border border-outline-variant/40 transition-all group relative overflow-hidden flex flex-col justify-end min-h-[400px]" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
                         <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent opacity-60 z-0"></div>
                         <div class="relative z-10">
-                            <div class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center text-on-primary mb-8 group-hover:scale-110 transition-transform shadow-sm">
+                            <div class="w-16 h-16 bg-primary rounded-xl flex items-center justify-center text-on-primary mb-8 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300 shadow-sm">
                                 <span class="material-symbols-outlined text-[32px]" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
                             </div>
-                            <h3 class="font-headline-sm text-[32px] font-bold text-on-surface mb-4">Real-time Stock Tracking</h3>
+                            <h3 class="font-headline-sm text-[28px] sm:text-[32px] font-bold text-on-surface mb-4">Real-time Stock Tracking</h3>
                             <p class="font-body-md text-[18px] text-on-surface-variant leading-relaxed max-w-xl">
                                 Precision and absolute control over every SKU. Our proprietary tracking engine provides sub-second updates across multiple global warehouses simultaneously, ensuring you never miss a beat in fulfillment.
                             </p>
@@ -140,8 +160,8 @@ onMounted(() => {
                     </div>
                     <div class="flex flex-col gap-6">
                         <!-- Feature 2 -->
-                        <div class="flex-1 p-8 rounded-3xl border border-outline-variant/40 hover:border-secondary/40 transition-all group hover:shadow-[0_0_30px_rgba(111,251,190,0.08)] relative overflow-hidden" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
-                            <div class="w-12 h-12 bg-secondary/15 rounded-lg flex items-center justify-center text-secondary mb-6 group-hover:scale-110 transition-transform">
+                        <div class="stagger-item card-hover flex-1 p-8 rounded-3xl border border-outline-variant/40 transition-all group relative overflow-hidden" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
+                            <div class="w-12 h-12 bg-secondary/15 rounded-lg flex items-center justify-center text-secondary mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">groups</span>
                             </div>
                             <h3 class="font-headline-sm text-[22px] font-bold text-on-surface mb-3">Resource Management</h3>
@@ -150,8 +170,8 @@ onMounted(() => {
                             </p>
                         </div>
                         <!-- Feature 3 -->
-                        <div class="flex-1 p-8 rounded-3xl border border-outline-variant/40 hover:border-primary/40 transition-all group hover:shadow-[0_0_30px_rgba(195,192,255,0.08)] relative overflow-hidden" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
-                            <div class="w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform">
+                        <div class="stagger-item card-hover flex-1 p-8 rounded-3xl border border-outline-variant/40 transition-all group relative overflow-hidden" style="background: rgba(211,228,254,0.5); backdrop-filter: blur(20px); border: 1px solid rgba(0,0,0,0.1);">
+                            <div class="w-12 h-12 bg-primary/15 rounded-lg flex items-center justify-center text-primary mb-6 group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
                                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">point_of_sale</span>
                             </div>
                             <h3 class="font-headline-sm text-[22px] font-bold text-on-surface mb-3">Sales Integration</h3>
@@ -165,24 +185,24 @@ onMounted(() => {
         </section>
 
         <!-- Data Visualization Section -->
-        <section class="relative pt-32 pb-48 bg-gradient-to-b from-surface-container-low to-surface-container -mb-24 z-10" style="clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);">
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+        <section class="relative pt-32 pb-52 bg-gradient-to-b from-surface-container-low to-surface-container -mb-24 z-10" style="clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);">
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
                     <div class="lg:col-span-5 relative z-20 text-on-surface">
-                        <h2 class="font-headline-lg text-[56px] font-extrabold mb-6 leading-tight">Unrivaled Depth <br/>of Insight</h2>
+                        <h2 class="font-headline-lg text-[36px] sm:text-[56px] font-extrabold mb-6 leading-tight">Unrivaled Depth <br/>of Insight</h2>
                         <p class="font-body-lg text-[18px] text-on-surface-variant mb-10 leading-relaxed">
                             Experience the interface designed for power users. Every interaction is optimized for speed, allowing you to drill down from macro trends to individual item histories in seconds.
                         </p>
                         <ul class="space-y-6">
-                            <li class="flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
+                            <li class="stagger-item flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30 hover:-translate-x-1 hover:shadow-md transition-all" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
                                 <span class="material-symbols-outlined text-secondary text-[28px]">check_circle</span>
                                 <span class="font-body-md text-[16px] font-bold text-on-surface">Auto-replenishment algorithms</span>
                             </li>
-                            <li class="flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
+                            <li class="stagger-item flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30 hover:-translate-x-1 hover:shadow-md transition-all" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
                                 <span class="material-symbols-outlined text-secondary text-[28px]">check_circle</span>
                                 <span class="font-body-md text-[16px] font-bold text-on-surface">Predictive churn modeling</span>
                             </li>
-                            <li class="flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
+                            <li class="stagger-item flex items-center gap-4 p-4 rounded-xl shadow-sm border border-outline-variant/30 hover:-translate-x-1 hover:shadow-md transition-all" style="background: rgba(211,228,254,0.55); backdrop-filter: blur(20px);">
                                 <span class="material-symbols-outlined text-secondary text-[28px]">check_circle</span>
                                 <span class="font-body-md text-[16px] font-bold text-on-surface">Custom multi-tenant reporting</span>
                             </li>
@@ -190,13 +210,19 @@ onMounted(() => {
                     </div>
                     <div class="lg:col-span-7 relative">
                         <div class="absolute -inset-10 bg-primary rounded-full blur-[100px] opacity-15 z-0 animate-pulse"></div>
-                        <div class="rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden relative z-20 transform translate-y-16" style="background: rgba(211,228,254,0.65); backdrop-filter: blur(20px);">
+                        <div class="float-slow rounded-2xl shadow-[0_30px_60px_rgba(0,0,0,0.12)] border border-outline-variant/30 overflow-hidden relative z-20 transform translate-y-16" style="background: rgba(211,228,254,0.65); backdrop-filter: blur(20px);">
                             <!-- Table Header -->
                             <div class="px-8 py-6 border-b border-outline-variant/30 flex justify-between items-center bg-surface-container-high/50">
                                 <h4 class="font-headline-sm text-headline-sm text-on-surface font-bold">Live Inventory Analytics</h4>
                                 <div class="flex gap-2">
                                     <span class="px-3 py-1 bg-surface-variant rounded-full text-[12px] font-bold text-on-surface">Q4 REPORT</span>
-                                    <span class="px-3 py-1 bg-secondary/15 text-secondary rounded-full text-[12px] font-bold">REAL-TIME</span>
+                                    <span class="px-3 py-1 bg-secondary/15 text-secondary rounded-full text-[12px] font-bold flex items-center gap-1.5">
+                                        <span class="relative flex h-1.5 w-1.5">
+                                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-secondary"></span>
+                                        </span>
+                                        REAL-TIME
+                                    </span>
                                 </div>
                             </div>
                             <!-- Data Table -->
@@ -284,14 +310,14 @@ onMounted(() => {
         </section>
 
         <!-- CTA Section -->
-        <section class="pt-48 pb-32 bg-surface-container relative z-0">
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
-                <div class="bg-gradient-to-r from-on-primary-fixed-variant to-primary rounded-3xl p-16 text-center relative overflow-hidden shadow-2xl border border-white/10">
-                    <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-white opacity-10 rounded-full blur-[80px] -mr-48 -mt-48"></div>
-                    <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary-fixed opacity-20 rounded-full blur-[100px] -ml-48 -mb-48"></div>
+        <section class="pt-52 pb-32 bg-surface-container relative z-0">
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
+                <div class="cta-gradient rounded-3xl p-10 sm:p-16 text-center relative overflow-hidden shadow-2xl border border-white/10">
+                    <div class="blob blob-d absolute top-0 right-0 w-[600px] h-[600px] bg-white opacity-10 rounded-full blur-[80px] -mr-48 -mt-48"></div>
+                    <div class="blob blob-e absolute bottom-0 left-0 w-[600px] h-[600px] bg-secondary-fixed opacity-20 rounded-full blur-[100px] -ml-48 -mb-48"></div>
                     <div class="relative z-10">
-                        <h2 class="font-headline-lg text-[48px] font-extrabold text-on-primary mb-6">Ready to optimize your supply chain?</h2>
-                        <p class="font-body-lg text-[20px] text-white/80 max-w-2xl mx-auto mb-12">
+                        <h2 class="font-headline-lg text-[32px] sm:text-[48px] font-extrabold text-on-primary mb-6">Ready to optimize your supply chain?</h2>
+                        <p class="font-body-lg text-[18px] sm:text-[20px] text-white/80 max-w-2xl mx-auto mb-12">
                             Join over 400 global enterprises leveraging Invenio Pro to achieve operational excellence. Secure, scalable, and built for professionals.
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -301,7 +327,7 @@ onMounted(() => {
                             <button v-else class="bg-on-primary text-primary px-10 py-4 rounded-xl font-headline-sm text-headline-sm hover:scale-105 transition-transform shadow-xl">
                                 Get Started Now
                             </button>
-                            <button class="bg-black/15 backdrop-blur-md border border-white/30 text-on-primary px-10 py-4 rounded-xl font-headline-sm text-headline-sm hover:bg-black/25 transition-colors">
+                            <button class="bg-black/15 backdrop-blur-md border border-white/30 text-on-primary px-10 py-4 rounded-xl font-headline-sm text-headline-sm hover:bg-black/25 hover:scale-105 transition-all">
                                 Talk to Sales
                             </button>
                         </div>
@@ -312,16 +338,16 @@ onMounted(() => {
 
         <!-- Footer -->
         <footer class="w-full py-16 bg-surface-container border-t border-outline-variant/30">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-10 max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
                 <div class="col-span-1">
                     <span class="font-headline-sm text-headline-sm font-bold text-on-surface mb-6 block">Invenio Pro</span>
                     <p class="font-body-md text-body-md text-on-surface-variant mb-6 pr-4">
                         Professional inventory intelligence for the modern industrial age.
                     </p>
                     <div class="flex gap-4">
-                        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">public</span></a>
-                        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">mail</span></a>
-                        <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span class="material-symbols-outlined">hub</span></a>
+                        <a class="text-on-surface-variant hover:text-primary hover:-translate-y-0.5 transition-all" href="#"><span class="material-symbols-outlined">public</span></a>
+                        <a class="text-on-surface-variant hover:text-primary hover:-translate-y-0.5 transition-all" href="#"><span class="material-symbols-outlined">mail</span></a>
+                        <a class="text-on-surface-variant hover:text-primary hover:-translate-y-0.5 transition-all" href="#"><span class="material-symbols-outlined">hub</span></a>
                     </div>
                 </div>
                 <div>
@@ -348,7 +374,7 @@ onMounted(() => {
                     </ul>
                 </div>
             </div>
-            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop mt-16 pt-8 border-t border-outline-variant/30 text-center">
+            <div class="max-w-container-max mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 mt-16 pt-8 border-t border-outline-variant/30 text-center">
                 <p class="font-body-md text-body-md text-on-surface-variant">© 2024 Invenio Pro. All rights reserved.</p>
             </div>
         </footer>
@@ -363,5 +389,100 @@ body { font-family: 'Inter', sans-serif; }
 .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     vertical-align: middle;
+}
+
+/* Nav underline */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 0;
+    height: 2px;
+    background: currentColor;
+    transition: width 0.25s ease;
+}
+.nav-link:hover::after { width: 100%; }
+.nav-link-active { border-bottom: 2px solid #3525cd; }
+.nav-link-active::after { display: none; }
+
+/* Shimmer sweep on primary buttons */
+.btn-shimmer { position: relative; overflow: hidden; }
+.btn-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -75%;
+    width: 50%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.35), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.6s ease;
+}
+.btn-shimmer:hover::after { left: 125%; }
+
+/* Card hover lift + glow */
+.card-hover { transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease; }
+.card-hover:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 45px rgba(53, 37, 205, 0.15);
+    border-color: rgba(53, 37, 205, 0.35) !important;
+}
+
+/* Animated gradient text */
+.animate-gradient-text {
+    background-size: 200% auto;
+    animation: gradientShift 4s ease-in-out infinite;
+}
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* Floating blobs */
+.blob { animation: floatBlob 12s ease-in-out infinite; }
+.blob-a { animation-duration: 14s; }
+.blob-b { animation-duration: 10s; animation-delay: -3s; }
+.blob-c { animation-duration: 16s; animation-delay: -6s; }
+.blob-d { animation-duration: 11s; }
+.blob-e { animation-duration: 13s; animation-delay: -4s; }
+@keyframes floatBlob {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.08); }
+    66% { transform: translate(-20px, 25px) scale(0.95); }
+}
+
+/* Gentle floating card */
+.float-slow { animation: floatSlow 6s ease-in-out infinite; }
+@keyframes floatSlow {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-14px); }
+}
+
+/* Marquee */
+.marquee-mask {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+}
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 22s linear infinite;
+}
+.marquee-track:hover { animation-play-state: paused; }
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+/* CTA animated gradient */
+.cta-gradient {
+    background: linear-gradient(115deg, #3323cc, #3525cd, #4d44e3, #3525cd);
+    background-size: 300% 300%;
+    animation: gradientShift 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .blob, .float-slow, .marquee-track, .animate-gradient-text, .cta-gradient { animation: none !important; }
 }
 </style>
