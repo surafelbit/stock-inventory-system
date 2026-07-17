@@ -17,8 +17,41 @@ Route::get('/', function () {
     ]);
 });
 
+use App\Models\Product;
+use App\Models\Category;
+
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $totalProducts = Product::count();
+    $totalStock = (int) Product::sum('stock');
+    
+    // Calculate total inventory value based on stock and cost price
+    $stockValue = (float) Product::selectRaw('SUM(stock * cost_price) as total_val')->value('total_val');
+    
+    // Count items with stock lower than 10
+    $lowStockCount = Product::where('stock', '<', 10)->count();
+    
+    // Get the latest 5 products added to the system
+    $recentProducts = Product::with('category')->latest()->take(5)->get();
+    
+    // Get all categories with their product count
+    $categoryCounts = Category::withCount('products')->get()->map(function ($cat) {
+        return [
+            'id' => $cat->id,
+            'name' => $cat->name,
+            'count' => $cat->products_count,
+        ];
+    });
+
+    return Inertia::render('Dashboard', [
+        'stats' => [
+            'totalProducts' => $totalProducts,
+            'totalStock' => $totalStock,
+            'stockValue' => $stockValue,
+            'lowStockCount' => $lowStockCount,
+        ],
+        'recentProducts' => $recentProducts,
+        'categoryCounts' => $categoryCounts,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
     Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
