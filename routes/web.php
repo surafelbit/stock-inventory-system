@@ -25,13 +25,10 @@ Route::get('/dashboard', function () {
     $totalProducts = Product::count();
     $totalStock = (int) Product::sum('stock');
     
-    // Calculate total inventory value based on stock and cost price
     $stockValue = (float) Product::selectRaw('SUM(stock * cost_price) as total_val')->value('total_val');
     
-    // Count items with stock lower than 10
     $lowStockCount = Product::where('stock', '<', 10)->count();
     
-    // Get the latest 5 products added to the system
     $recentProducts = Product::with('category')->latest()->take(5)->get();
     
     // Get all categories with their product count
