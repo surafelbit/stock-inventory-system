@@ -52,6 +52,13 @@ const showingNavigationDropdown = ref(false);
                                 >
                                     Suppliers
                                 </Link>
+                                <Link
+                                    :href="route('purchases.index')"
+                                    class="relative font-body-md text-body-md flex items-center h-full px-4 border-b-2 transition-all duration-200"
+                                    :class="route().current('purchases.index') ? 'border-primary text-primary font-bold' : 'border-transparent text-on-surface-variant hover:text-primary hover:border-outline-variant'"
+                                >
+                                    Purchases
+                                </Link>
                             </div>
                         </div>
 
@@ -175,6 +182,13 @@ const showingNavigationDropdown = ref(false);
                             :class="route().current('suppliers.index') ? 'border-primary text-primary bg-primary/5 font-bold' : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low'"
                         >
                             Suppliers
+                        </Link>
+                        <Link
+                            :href="route('purchases.index')"
+                            class="block w-full ps-4 pe-4 py-2.5 border-l-4 text-start text-base font-medium transition duration-150 ease-in-out"
+                            :class="route().current('purchases.index') ? 'border-primary text-primary bg-primary/5 font-bold' : 'border-transparent text-on-surface-variant hover:text-primary hover:bg-surface-container-low'"
+                        >
+                            Purchases
                         </Link>
                     </div>
 
