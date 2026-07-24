@@ -71,6 +71,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
     Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    Route::get('/customers', [CustomerController::class, 'index'])->name('customers.index');
+    Route::post('/customers', [CustomerController::class, 'store'])->name('customers.store');
+    Route::delete('/customers/{customer}', [CustomerController::class, 'destroy'])->name('customers.destroy');
 });
 
 require __DIR__.'/auth.php';
